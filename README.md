@@ -1,2 +1,21 @@
-# UberFreeRADIUSBridge
-Auth bridge between MAGFest's RAMS/UBER and FreeRADIUS, used for WPA2 Enterprise WiFi 
+**UberFreeRADIUSBridge** is an ASP.NET Core webapp that sits between [MAGFest's Ubersystem](https://github.com/magfest/ubersystem) and FreeRADIUS. It allows users to log into WiFi using their Badge Number and Zip code, if their badge level gives them access.
+
+# Features
+- Supports allowing users access based on their badge level (Ex: Staff and panelists get access; regular attendees do not)
+- Temporarily caches responses from Uber to save API lookups
+- SQLite backend for logging users/MACs, as well as supporting user overrides 
+- Badge numbers can be force denied, force allowed, or force allowed with a custom password
+- Handles multiple simultaneous auth attempts by running the ASP.NET Core Kestrel Websever
+- Supports a static `laptop` login for event-provided devices that need to auth with the network
+
+# Performance
+We ran this bridge at MAGFest 2018 with roughly ~600 simultaneous WiFi clients peak and ~1,300 total connected devices, with no issues on the bridge side. Our biggest pain points were our wireless controller aggressively blocking users with too many failed auth attempts, and non-numerical zip codes.
+
+# To Do
+- Handle non-numerical zip codes -- right now, the code requires an exact case match. We should find some way to handle this better, as end users don't expect case to matter.
+- Add WebUI to add in overrides, rather than requiring editing the SQLite file directly
+- Have some form of administrative interface to show stats
+- Document the FreeRADIUS setup needed to make use of the bridge.
+
+# Want to run this?
+Everything is in a functional, runable state, but documentation is lacking. Open a GitHub issue if you have any issues, and we'll take a look. We anticipate having better FreeRADIUS setup documentation once we have our rack powered back on post-event and we've caught up on sleep.
