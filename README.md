@@ -7,6 +7,7 @@
 - Badge numbers can be force denied, force allowed, or force allowed with a custom password
 - Handles multiple simultaneous auth attempts by running the ASP.NET Core Kestrel Websever
 - Supports a static `laptop` login for event-provided devices that need to auth with the network
+- Makes use of FreeRADIUS’s REST module
 
 # Performance
 We ran this bridge at MAGFest 2018 with roughly ~600 simultaneous WiFi clients peak and ~1,300 total connected devices, with no issues on the bridge side. Our biggest pain points were our wireless controller aggressively blocking users with too many failed auth attempts, and non-numerical zip codes.
