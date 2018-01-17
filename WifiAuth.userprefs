@@ -1,0 +1,24 @@
+﻿<Properties StartupConfiguration="{0C8F95C6-EB8D-424C-9580-B8903E910F1D}|Default">
+  <MonoDevelop.Ide.ItemProperties.WifiAuth PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="WifiAuth/Controllers/RadiusController.cs">
+    <Files>
+      <File FileName="WifiAuth/Controllers/RadiusController.cs" Line="328" Column="70" />
+      <File FileName="WifiAuth/Program.cs" Line="15" Column="8" />
+      <File FileName="WifiAuth/Startup.cs" Line="25" Column="105" />
+      <File FileName="WifiAuth/appsettings.json" Line="21" Column="1" />
+      <File FileName="WifiAuth/appsettings.Development.json" Line="11" Column="1" />
+      <File FileName="WifiAuth/config.json" Line="4" Column="2" />
+      <File FileName="WifiAuth/Attendee.cs" Line="28" Column="19" />
+      <File FileName="WifiAuth/Properties/launchSettings.json" Line="9" Column="9" />
+      <File FileName="WifiAuth/DB/DeviceLogEntry.cs" Line="8" Column="55" />
+      <File FileName="WifiAuth/DB/WifiAuthContext.cs" Line="16" Column="13" />
+      <File FileName="WifiAuth/DB/UserOverride.cs" Line="25" Column="28" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
