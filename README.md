@@ -20,3 +20,11 @@ We ran this bridge at MAGFest 2018 with roughly ~600 simultaneous WiFi clients p
 
 # Want to run this?
 Everything is in a functional, runable state, but documentation is lacking. Open a GitHub issue if you have any issues, and we'll take a look. We anticipate having better FreeRADIUS setup documentation once we have our rack powered back on post-event and we've caught up on sleep.
+
+# Set Secrets
+You'll need to set up [ASP.NET Core Secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.2) to make this run. To do so, run the following with the correct info:
+```
+dotnet user-secrets set "LaptopPassword" "ThisIsntOurRealPassword"
+dotnet user-secrets set "APIKey" "ffffffff-ffff-ffff-ffff-ffffffffffff"
+dotnet user-secrets set "UberServer" "https://staging4.uber.magfest.org/uber/jsonrpc"
+```
