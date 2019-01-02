@@ -15,6 +15,13 @@ namespace WifiAuth
 {
       public class Startup
       {
+
+            // We'll retreive these from the Secrets Manager
+            // See the Readme on how to set these
+            public static string _laptopPassword { get; private set; }
+            public static string _APIKey { get; private set; }
+            public static string _UberAPIAddress { get; private set; }
+
             public Startup(IConfiguration configuration)
             {
                   Configuration = configuration;
@@ -30,6 +37,11 @@ namespace WifiAuth
 
                   services.AddDbContext<WifiAuthContext>(options =>
                                                          options.UseSqlite("Data Source=wifiauth.db"));
+
+                  // Load settings from the Secret Manager
+                  _laptopPassword = Configuration["LaptopPassword"];
+                  _APIKey = Configuration["APIKey"];
+                  _UberAPIAddress = Configuration["UberServer"];
 
             }
 

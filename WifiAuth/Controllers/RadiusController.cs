@@ -35,10 +35,10 @@ namespace WifiAuth.Controllers
 
 
                   var httpClient = new HttpClient();
-                  httpClient.DefaultRequestHeaders.Add("X-Auth-Token", Config.APIKey);
+                  httpClient.DefaultRequestHeaders.Add("X-Auth-Token", Startup._APIKey);
 
                   HttpContent EncodedPostContent = new StringContent(PostContent);
-                  var response = httpClient.PostAsync(Config.UberServer, EncodedPostContent).Result;
+                  var response = httpClient.PostAsync(Startup._UberAPIAddress, EncodedPostContent).Result;
 
                   String RspBody = response.Content.ReadAsStringAsync().Result;
 
@@ -140,11 +140,11 @@ namespace WifiAuth.Controllers
                         // It's not the most ideal way of building a JSON search...
                         String PostContent = @"{ ""method"":""attendee.lookup"", ""params"": [""" + username + @"""]}";
 
-                        // Build the HTTP client and send it 
+                        // Build the HTTP client and send it
                         var httpClient = new HttpClient();
-                        httpClient.DefaultRequestHeaders.Add("X-Auth-Token", Config.APIKey);
+                        httpClient.DefaultRequestHeaders.Add("X-Auth-Token", Startup._APIKey);
                         HttpContent EncodedPostContent = new StringContent(PostContent);
-                        var response = httpClient.PostAsync(Config.UberServer, EncodedPostContent).Result;
+                        var response = httpClient.PostAsync(Startup._UberAPIAddress, EncodedPostContent).Result;
 
                         String RspBody = response.Content.ReadAsStringAsync().Result;
 
@@ -198,7 +198,9 @@ namespace WifiAuth.Controllers
                   {
                         if (forceAllow) { Console.WriteLine(formattedUsername + "Force allow override in place for " + username + " !"); }
 
-                        Console.WriteLine(formattedUsername + "Signin allowed!");
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine(formattedUsername + "Signin allowed for " + user.FullName + "!");
+                        Console.ResetColor();
 
                         LogUserLoginToDevice(username, callingStation);
 
@@ -206,7 +208,9 @@ namespace WifiAuth.Controllers
                   }
                   else
                   {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(formattedUsername + "Signin blocked -- badge flags not valid");
+                        Console.ResetColor();
                         return StatusCode(401, new RejectedRadiusResponse("Sorry, your badge type is not allowed. Please see TechOps for assistance."));
                   }
 
@@ -235,7 +239,9 @@ namespace WifiAuth.Controllers
 
                   // Get count of MACs by username
                   int numMACsByUsername = _context.DeviceLogEntries.Where(e => e.Login == username).AsNoTracking().Count();
+                  Console.ForegroundColor = ConsoleColor.Cyan;
                   Console.WriteLine(formattedUsername + "--> " + username + " has logged into " + numMACsByUsername + " devices.");
+                  Console.ResetColor();
             }
 
 
@@ -260,8 +266,8 @@ namespace WifiAuth.Controllers
 
                   //if (NoMAC || AllowedLaptopMACs.Contains(callingStation))
                   //{
-                        Console.WriteLine("[ laptop  ] Allowing laptop login with MAC " + callingStation);
-                        return Json(new RADIUSResponse(Config.laptopPassword, "laptop", "laptop"));
+                  Console.WriteLine("[ laptop  ] Allowing laptop login with MAC " + callingStation);
+                  return Json(new RADIUSResponse(Startup._laptopPassword, "laptop", "laptop"));
                   //}
                   //else
                   //{
@@ -304,8 +310,21 @@ namespace WifiAuth.Controllers
             [JsonProperty(PropertyName = "User-Name")]
             public String Username;
 
+            //[JsonProperty(PropertyName = "Tunnel-Type")]
+            //public string tunnelType = "VLAN";
+
+            //[JsonProperty(PropertyName = "Tunnel-Medium-Type")]
+            //public string tunnelMediumType = "IEEE-802";
+
+            //[JsonProperty(PropertyName = "Tunnel-Private-Group-Id")]
+            //public int tunnelPrivateGroupID = 12;
+
+            //[JsonProperty(PropertyName = "Airespace-QOS-Level")]
+            //public int qosLevel = 2;
+
+
             /// <summary>
-            /// Creates a successful Radius Response 
+            /// Creates a successful Radius Response
             /// </summary>
             /// <param name="PlaintextPassword">Plaintext password</param>
             /// <param name="RealName">Real name</param>
@@ -319,25 +338,5 @@ namespace WifiAuth.Controllers
             }
 
       }
-
-
-      /// <summary>
-      /// Config paramaters. You'll need to change these for anything to work.
-      /// </summary>
-      public static class Config
-      {
-
-            public static string APIKey = "ffffffff-ffff-ffff-ffff-ffffffffffff";
-
-            public static Uri UberServer = new Uri("https://staging4.uber.magfest.org/uber/jsonrpc");
-
-            public static string laptopPassword = "ThisIsntOurRealPassword";
-
-      }
-
-
-
-
-
 
 }
