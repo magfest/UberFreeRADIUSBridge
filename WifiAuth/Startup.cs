@@ -39,6 +39,7 @@ namespace WifiAuth
                                                          options.UseSqlite("Data Source=wifiauth.db"));
 
                   // Load settings from the Secret Manager
+                  // TODO: This needs to bail if not set, rather than silently continuing and then erroring later
                   _laptopPassword = Configuration["LaptopPassword"];
                   _APIKey = Configuration["APIKey"];
                   _UberAPIAddress = Configuration["UberServer"];

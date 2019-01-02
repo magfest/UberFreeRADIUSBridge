@@ -204,7 +204,8 @@ namespace WifiAuth.Controllers
 
                         LogUserLoginToDevice(username, callingStation);
 
-                        return Json(new RADIUSResponse(user.ZipCode, user.FullName, username));
+                        // We ToLower() the "zip" to provide consistant handling of non-numerical postal codes
+                        return Json(new RADIUSResponse(user.ZipCode.ToLower(), user.FullName, username));
                   }
                   else
                   {
@@ -247,35 +248,8 @@ namespace WifiAuth.Controllers
 
             private ActionResult ProcessLaptopLogin(string callingStation, string action)
             {
-                  //string[] AllowedLaptopMACs = new string[] { "aa:bb:cc:dd:ee:ff", "d4:f4:6f:c2:14:ef", "90:2e:1c:2d:e7:95" };
-
-
-                  //// Gracefully handle when we don't have a calling station (inner-tunnel)
-                  //Boolean NoMAC = true;
-
-                  ////Console.WriteLine(HttpContext.Request.Headers["X-FreeRADIUS-Server"]);
-
-                  //if (HttpContext.Request.Headers["X-FreeRADIUS-Server"] != "inner-tunnel")
-                  //{
-                  //      // Clean up given MAC
-                  //      callingStation = callingStation.ToLower();
-                  //      callingStation = callingStation.Replace('-', ':');
-                  //      NoMAC = false;
-                  //}
-
-
-                  //if (NoMAC || AllowedLaptopMACs.Contains(callingStation))
-                  //{
                   Console.WriteLine("[ laptop  ] Allowing laptop login with MAC " + callingStation);
                   return Json(new RADIUSResponse(Startup._laptopPassword, "laptop", "laptop"));
-                  //}
-                  //else
-                  //{
-                  //      Console.WriteLine("[ laptop  ] Rejecting laptop login with MAC " + callingStation);
-                  //      return StatusCode(401, new RejectedRadiusResponse("Sorry, this MAC is not allowed to use this login"));
-                  //}
-
-
             }
 
 
@@ -311,6 +285,7 @@ namespace WifiAuth.Controllers
             public String Username;
 
             //[JsonProperty(PropertyName = "Tunnel-Type")]
+            //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             //public string tunnelType = "VLAN";
 
             //[JsonProperty(PropertyName = "Tunnel-Medium-Type")]
