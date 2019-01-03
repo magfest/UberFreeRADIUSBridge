@@ -24,7 +24,8 @@ namespace WifiAuth.DB
             NoOverride = 0,
             ForceAllow = 1,
             ForceDeny = 2,
-            ForceAllowWithPassword = 3
+            ForceAllowWithPassword = 3,
+            ForceToTechOps = 4
       }
 
 }

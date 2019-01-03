@@ -138,7 +138,7 @@ namespace WifiAuth.Controllers
                         Console.WriteLine(formattedUsername + "Doing live lookup in Uber for user");
 
                         // It's not the most ideal way of building a JSON search...
-                        String PostContent = @"{ ""method"":""attendee.lookup"", ""params"": [""" + username + @"""]}";
+                        String PostContent = @"{ ""method"":""attendee.lookup"", ""params"": [""" + username + @""", ""full""]}";
 
                         // Build the HTTP client and send it
                         var httpClient = new HttpClient();
@@ -205,7 +205,17 @@ namespace WifiAuth.Controllers
                         LogUserLoginToDevice(username, callingStation);
 
                         // We ToLower() the "zip" to provide consistant handling of non-numerical postal codes
-                        return Json(new RADIUSResponse(user.ZipCode.ToLower(), user.FullName, username));
+                        if ((user.AssignedDepartments.Contains("Tech Ops") && user.IsDepartmentHead) || overrideEntry.Override == OverrideType.ForceToTechOps)
+                        {
+                              Console.ForegroundColor = ConsoleColor.Magenta;
+                              Console.WriteLine("[      --> ] TechOps Override!");
+                              Console.ResetColor();
+                              return Json(new RADIUSResponse(user.ZipCode.ToLower(), user.FullName, username, 12, true));
+                        }
+                        else
+                        {
+                              return Json(new RADIUSResponse(user.ZipCode.ToLower(), user.FullName, username));
+                        }
                   }
                   else
                   {
@@ -284,15 +294,14 @@ namespace WifiAuth.Controllers
             [JsonProperty(PropertyName = "User-Name")]
             public String Username;
 
-            //[JsonProperty(PropertyName = "Tunnel-Type")]
-            //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-            //public string tunnelType = "VLAN";
+            [JsonProperty(PropertyName = "Tunnel-Type", NullValueHandling = NullValueHandling.Ignore)]
+            public string tunnelType;
 
-            //[JsonProperty(PropertyName = "Tunnel-Medium-Type")]
-            //public string tunnelMediumType = "IEEE-802";
+            [JsonProperty(PropertyName = "Tunnel-Medium-Type", NullValueHandling = NullValueHandling.Ignore)]
+            public string tunnelMediumType;
 
-            //[JsonProperty(PropertyName = "Tunnel-Private-Group-Id")]
-            //public int tunnelPrivateGroupID = 12;
+            [JsonProperty(PropertyName = "Tunnel-Private-Group-Id", NullValueHandling = NullValueHandling.Ignore)]
+            public int tunnelPrivateGroupID;
 
             //[JsonProperty(PropertyName = "Airespace-QOS-Level")]
             //public int qosLevel = 2;
@@ -304,12 +313,20 @@ namespace WifiAuth.Controllers
             /// <param name="PlaintextPassword">Plaintext password</param>
             /// <param name="RealName">Real name</param>
             /// <param name="BadgeNumber">Badge number</param>
-            public RADIUSResponse(String PlaintextPassword, String RealName, string BadgeNumber)
+            public RADIUSResponse(String PlaintextPassword, String RealName, string BadgeNumber, int? VLAN = null, bool? AllowUnlimitedBandwidth = null)
             {
                   this.PlaintextPassword = PlaintextPassword;
 
                   // Whatever this is set to will be returned to FreeRadius / WLC as the username
                   this.Username = RealName + " - " + BadgeNumber;
+
+                  // If we get a VLAN, set up the other required items
+                  if(VLAN != null)
+                  {
+                        tunnelType = "VLAN";
+                        tunnelMediumType = "IEEE-802";
+                        tunnelPrivateGroupID = (int)VLAN;
+                  }
             }
 
       }

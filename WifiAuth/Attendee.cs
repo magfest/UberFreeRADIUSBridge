@@ -22,6 +22,11 @@ namespace WifiAuth
             [JsonProperty("zip_code")]
             public string ZipCode;
 
+            [JsonProperty("assigned_depts_labels")]
+            public string[] AssignedDepartments;
+
+            [JsonProperty("is_dept_head")]
+            public bool IsDepartmentHead;
 
             public Attendee()
             {
