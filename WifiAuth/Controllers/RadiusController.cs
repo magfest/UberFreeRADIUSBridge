@@ -205,7 +205,7 @@ namespace WifiAuth.Controllers
                         LogUserLoginToDevice(username, callingStation);
 
                         // We ToLower() the "zip" to provide consistant handling of non-numerical postal codes
-                        if ((user.AssignedDepartments.Contains("Tech Ops") && user.IsDepartmentHead) || overrideEntry.Override == OverrideType.ForceToTechOps)
+                        if ((user.AssignedDepartments.Contains("Tech Ops") && user.IsDepartmentHead) || (null != overrideEntry && overrideEntry.Override == OverrideType.ForceToTechOps))
                         {
                               Console.ForegroundColor = ConsoleColor.Magenta;
                               Console.WriteLine("[      --> ] TechOps Override!");
