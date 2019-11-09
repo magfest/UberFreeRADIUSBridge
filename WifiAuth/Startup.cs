@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WifiAuth.DB;
+using Microsoft.Extensions.Hosting;
 
 namespace WifiAuth
 {
@@ -33,9 +34,10 @@ namespace WifiAuth
             public void ConfigureServices(IServiceCollection services)
             {
                   services.AddMemoryCache();
-                  services.AddMvc();
+                  services.AddMvc().AddNewtonsoftJson();
+                  services.AddControllers();
 
-                  services.AddDbContext<WifiAuthContext>(options =>
+                   services.AddDbContext<WifiAuthContext>(options =>
                                                          options.UseSqlite("Data Source=wifiauth.db"));
 
                   // Load settings from the Secret Manager
@@ -47,14 +49,18 @@ namespace WifiAuth
             }
 
             // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-            public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
             {
                   if (env.IsDevelopment())
                   {
                         app.UseDeveloperExceptionPage();
                   }
 
-                  app.UseMvc();
+                  //app.UseMvc();
+                  app.UseRouting();
+                  app.UseEndpoints(endpoints => {
+                        endpoints.MapControllers();
+                  });
             }
       }
 }

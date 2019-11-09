@@ -28,3 +28,18 @@ dotnet user-secrets set "LaptopPassword" "ThisIsntOurRealPassword"
 dotnet user-secrets set "APIKey" "ffffffff-ffff-ffff-ffff-ffffffffffff"
 dotnet user-secrets set "UberServer" "https://staging4.uber.magfest.org/uber/jsonrpc"
 ```
+
+# Very Fast Demo
+Build the project, enter some screts as given above, and start the project.
+
+Run `curl -i  -H "Content-Type: application/json" http://localhost:5000/radius/user/laptop/mac/aa:bb:cc:dd:ee:ff`, which simulates a user named `laptop` making a login request. This should return, even if you don't have an UberServer or API key defined. (Note: This won't work in a browser, as the wront `Content-Type` is sent.)
+
+```
+HTTP/1.1 200 OK
+Date: Sat, 09 Nov 2019 06:59:59 GMT
+Content-Type: application/json; charset=utf-8
+Server: Kestrel
+Transfer-Encoding: chunked
+
+{"control:Cleartext-Password":"ThisIsntOurRealPassword","User-Name":"laptop - laptop","Tunnel-Private-Group-Id":0}
+```

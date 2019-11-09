@@ -1,29 +1,29 @@
 {
-      "iisSettings": {
-            "windowsAuthentication": false,
-            "anonymousAuthentication": true,
-            "iisExpress": {
-                  "applicationUrl": "http://localhost:55556/",
-                  "sslPort": 0
-            }
-      },
-      "profiles": {
-            "IIS Express": {
-                  "commandName": "IISExpress",
-                  "launchBrowser": true,
-                  "launchUrl": "user/a/mac/a",
-                  "environmentVariables": {
-                        "ASPNETCORE_ENVIRONMENT": "Development"
-                  }
-            },
-            "WifiAuth": {
-                  "commandName": "Project",
-                  "launchBrowser": true,
-                  "launchUrl": "user/a/mac/a",
-                  "environmentVariables": {
-                        "ASPNETCORE_ENVIRONMENT": "Development"
-                  },
-                  "applicationUrl": "http://localhost:5000/"
-            }
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:55556/",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "user/a/mac/a",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "WifiAuth": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "user/a/mac/a",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000/"
+    }
+  }
 }
