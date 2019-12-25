@@ -96,16 +96,16 @@ namespace WifiAuth.Controllers
 
                   // Make sure the username is either 'laptop' or an integer so we don't hammer Uber with invalid entries
                   int num;
-                  if (!(username == "laptop" || int.TryParse(username, out num)))
+                  if (!(username.StartsWith("laptop", StringComparison.CurrentCultureIgnoreCase) || int.TryParse(username, out num)))
                   {
                         Console.WriteLine(formattedUsername + "Invalid login username from " + username);
                         return StatusCode(500, "Invalid login paramater.");
                   }
 
-                  // Verify that the `laptop` login is coming from a valid MAC
-                  if (username == "laptop")
+                  // Verify that the `laptop(*)` login is coming from a valid MAC
+                  if (username.StartsWith("laptop", StringComparison.CurrentCultureIgnoreCase))
                   {
-                        return ProcessLaptopLogin(callingStation, action);
+                        return ProcessLaptopLogin(username, callingStation, action);
                   }
 
                   // See if there's Override information
@@ -142,6 +142,10 @@ namespace WifiAuth.Controllers
 
                         // Build the HTTP client and send it
                         var httpClient = new HttpClient();
+
+                        // Fail fast to prevent all our threads from being consumed if Uber is having problems
+                        httpClient.Timeout = new TimeSpan(0, 0, 5);
+
                         httpClient.DefaultRequestHeaders.Add("X-Auth-Token", Startup._APIKey);
                         HttpContent EncodedPostContent = new StringContent(PostContent);
                         var response = httpClient.PostAsync(Startup._UberAPIAddress, EncodedPostContent).Result;
@@ -256,10 +260,10 @@ namespace WifiAuth.Controllers
             }
 
 
-            private ActionResult ProcessLaptopLogin(string callingStation, string action)
+            private ActionResult ProcessLaptopLogin(string username, string callingStation, string action)
             {
                   Console.WriteLine("[ laptop  ] Allowing laptop login with MAC " + callingStation);
-                  return Json(new RADIUSResponse(Startup._laptopPassword, "laptop", "laptop"));
+                  return Json(new RADIUSResponse(Startup._laptopPassword, username, "laptop"));
             }
 
 
