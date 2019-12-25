@@ -19,7 +19,7 @@
     "WifiAuth": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "user/a/mac/a",
+      "launchUrl": "radius/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

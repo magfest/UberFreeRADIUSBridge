@@ -1,0 +1,8 @@
+startup_message off
+
+
+#screen -t .NET /home/rscullin/2.2/dotnet /home/rscullin/auth/bin/Debug/netcoreapp2.0/WifiAuth.dll
+screen -t .NET dotnet watch --project /home/rscullin/UberFreeRADIUSBridge/WifiAuth/WifiAuth.csproj run
+screen -t radiusd sudo bash -c "sleep 15; radiusd -f -X"
+#screen -t freeradius bash -c 'sleep 2'; sudo -u root radiusd -f -X
+screen -t shell bash

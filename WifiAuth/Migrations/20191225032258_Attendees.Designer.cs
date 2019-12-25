@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WifiAuth.DB;
 
 namespace WifiAuth.Migrations
 {
     [DbContext(typeof(WifiAuthContext))]
-    partial class WifiAuthContextModelSnapshot : ModelSnapshot
+    [Migration("20191225032258_Attendees")]
+    partial class Attendees
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,24 +21,6 @@ namespace WifiAuth.Migrations
             modelBuilder.Entity("WifiAuth.DB.Attendee", b =>
                 {
                     b.Property<string>("BadgeID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("BadgeType")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FullName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsDepartmentHead")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ZipCode")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("_assignedDepartments")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("_badgeLabels")
                         .HasColumnType("TEXT");
 
                     b.HasKey("BadgeID");
