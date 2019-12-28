@@ -128,7 +128,7 @@ namespace WifiAuth.Controllers
             if (!GetUserFromLocalAttendeeList(username, out user))
             {
                 // Do a lookup in Uber
-                UberResponse rsp = Logic.LookUpInUber(username);
+                UberResponse rsp = Logic.LookUpBadgeNumberInUber(username);
                 if(rsp.ResponseStatus != 200)
                 {
                     return StatusCode(rsp.ResponseStatus, rsp.ResponseBody);

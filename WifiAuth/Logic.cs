@@ -36,12 +36,15 @@ namespace WifiAuth
 
         }
 
+
+        // TODO: The next to functions share a lot of common code -- refactor this into more common code
+
         /// <summary>
         /// Looks up a badge number in Uber, and returns a wrapper with the status and the User, if found
         /// </summary>
         /// <param name="BadgeNumber">Badge Number of the user</param>
         /// <returns>Wrapped Response Status, Response Body, and User as an Attendee Object</returns>
-        public static UberResponse LookUpInUber(string BadgeNumber)
+        public static UberResponse LookUpBadgeNumberInUber(string BadgeNumber)
         {
             // TODO: Console writing in a helper function isn't ideal.
 
@@ -50,6 +53,63 @@ namespace WifiAuth
 
             // It's not the most ideal way of building a JSON search...
             String PostContent = @"{ ""method"":""attendee.lookup"", ""params"": [""" + BadgeNumber + @""", ""full""]}";
+
+            // Build the HTTP client and send it
+            var httpClient = new HttpClient();
+
+            // Fail fast to prevent all our threads from being consumed if Uber is having problems
+            httpClient.Timeout = new TimeSpan(0, 0, 5);
+
+            httpClient.DefaultRequestHeaders.Add("X-Auth-Token", Startup._APIKey);
+            HttpContent EncodedPostContent = new StringContent(PostContent);
+            var response = httpClient.PostAsync(Startup._UberAPIAddress, EncodedPostContent).Result;
+
+            String RspBody = response.Content.ReadAsStringAsync().Result;
+
+            // If Uber gives us an error, bail and pass it up
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(formattedUsername + "!!! Uber returned an error.");
+                return new UberResponse(500, RspBody, null);
+            }
+
+            // Parse out the JSON
+            dynamic json = JToken.Parse(RspBody);
+
+            // This is an RPC error, so return a Server Failure
+            if (null != json.error)
+            {
+                Console.WriteLine(formattedUsername + "!!! Uber returned an error.");
+                return new UberResponse(500, RspBody, null);
+            }
+
+            // Probably a badge not found error.
+            if (null != json.result.error)
+            {
+                Console.WriteLine(formattedUsername + "!!! Uber returned a user not found error.");
+                return new UberResponse(404, RspBody, null);
+            }
+
+            // Create an attendee
+            Attendee user = json.result.ToObject<Attendee>();
+
+            return new UberResponse(200, RspBody, user);
+        }
+
+        /// <summary>
+        /// Looks up a barcode (~*) in Uber, and returns a wrapper with the status and the User, if found
+        /// </summary>
+        /// <param name="BadgeBarcode">Barcode of the user</param>
+        /// <returns>Wrapped Response Status, Response Body, and User as an Attendee Object</returns>
+        public static UberResponse LookUpBarcodeInUber(string BadgeBarcode)
+        {
+            // TODO: Console writing in a helper function isn't ideal.
+
+            string formattedUsername = string.Format("[{0,-10}] ", BadgeBarcode);
+            Console.WriteLine(formattedUsername + "Doing live lookup in Uber for barcode");
+
+            // It's not the most ideal way of building a JSON search...
+            String PostContent = @"{ ""method"":""barcode.lookup_attendee_from_barcode"", ""params"": [""" + BadgeBarcode + @""", ""full""]}";
 
             // Build the HTTP client and send it
             var httpClient = new HttpClient();

@@ -77,38 +77,54 @@ namespace WifiAuth.Controllers
         public IActionResult LookUpUser(string BadgeNum = "")
         {
             int badgenum;
-            if (int.TryParse(BadgeNum, out badgenum))
-            {
+            UberResponse rsp = null;
 
-                UberResponse rsp = Logic.LookUpInUber(BadgeNum);
+            // See if it's a barcode, and call Uber to get a badge number out of it 
+            if (BadgeNum.StartsWith("~", StringComparison.CurrentCultureIgnoreCase))
+            {
+                rsp = Logic.LookUpBarcodeInUber(BadgeNum);
 
                 if (rsp.ResponseStatus != 200)
                 {
                     return NotFound(rsp.ResponseBody);
                 }
 
-                var overrideEntry = _context.UserOverrides.Find(BadgeNum);
+            }
+            else if (int.TryParse(BadgeNum, out badgenum))
+            {
 
-                string OverrideType = "None";
-                if (overrideEntry != null)
+                rsp = Logic.LookUpBadgeNumberInUber(BadgeNum);
+
+                if (rsp.ResponseStatus != 200)
                 {
-                    OverrideType = overrideEntry.Override.ToString();
+                    return NotFound(rsp.ResponseBody);
                 }
-
-                var v = new
-                {
-                    AllowedAccess = Logic.IsUserAllowedWiFiByDefault(rsp.user),
-                    rsp.user.ZipCode,
-                    OverrideType,
-                    AttendeeObject = rsp.user,
-                };
-                return Ok(v);
             }
             else
             {
                 return NotFound();
             }
+
+            var overrideEntry = _context.UserOverrides.Find(BadgeNum);
+
+            string OverrideType = "None";
+            if (overrideEntry != null)
+            {
+                OverrideType = overrideEntry.Override.ToString();
+            }
+
+            var v = new
+            {
+                AllowedAccess = Logic.IsUserAllowedWiFiByDefault(rsp.user),
+                rsp.user.ZipCode,
+                OverrideType,
+                BadgeNum = rsp.user.BadgeID,
+                AttendeeObject = rsp.user,
+            };
+            return Ok(v);
         }
+
+
 
         /// <summary>
         /// Adds an override for a particular badge number
@@ -125,7 +141,7 @@ namespace WifiAuth.Controllers
                 return NotFound("Not a numerical badge.");
             }
 
-                UberResponse rsp = Logic.LookUpInUber(data.BadgeNum);
+            UberResponse rsp = Logic.LookUpBadgeNumberInUber(data.BadgeNum);
 
             if (rsp.ResponseStatus != 200)
             {
