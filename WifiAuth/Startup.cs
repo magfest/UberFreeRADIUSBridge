@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WifiAuth.DB;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 
 namespace WifiAuth
 {
@@ -34,7 +35,10 @@ namespace WifiAuth
             public void ConfigureServices(IServiceCollection services)
             {
                   services.AddMemoryCache();
-                  services.AddMvc().AddNewtonsoftJson();
+                  services.AddMvc().AddNewtonsoftJson(options =>
+                  {
+                      options.SerializerSettings.Formatting = Formatting.Indented;
+                  });
                   services.AddControllers();
 
                    services.AddDbContext<WifiAuthContext>(options =>

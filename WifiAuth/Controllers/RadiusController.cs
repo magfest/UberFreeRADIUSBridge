@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WifiAuth.DB;
+using static WifiAuth.Logic;
 
 namespace WifiAuth.Controllers
 {
@@ -47,8 +48,6 @@ namespace WifiAuth.Controllers
                 return StatusCode(500, RspBody);
             }
 
-
-
         }
 
 
@@ -63,11 +62,9 @@ namespace WifiAuth.Controllers
             Console.WriteLine($"SessionID: {sessionID}");
             Console.WriteLine(content);
 
-
             return Ok();
 
         }
-
 
 
         // POST /user/test/mac/08-d0-9f-ec-2a-f0%3AMAGFest%202018?action=authorize
@@ -130,55 +127,15 @@ namespace WifiAuth.Controllers
             // Look for cache key.
             if (!GetUserFromLocalAttendeeList(username, out user))
             {
-
-                Console.WriteLine(formattedUsername + "Doing live lookup in Uber for user");
-
-                // It's not the most ideal way of building a JSON search...
-                String PostContent = @"{ ""method"":""attendee.lookup"", ""params"": [""" + username + @""", ""full""]}";
-
-                // Build the HTTP client and send it
-                var httpClient = new HttpClient();
-
-                // Fail fast to prevent all our threads from being consumed if Uber is having problems
-                httpClient.Timeout = new TimeSpan(0, 0, 5);
-
-                httpClient.DefaultRequestHeaders.Add("X-Auth-Token", Startup._APIKey);
-                HttpContent EncodedPostContent = new StringContent(PostContent);
-                var response = httpClient.PostAsync(Startup._UberAPIAddress, EncodedPostContent).Result;
-
-                String RspBody = response.Content.ReadAsStringAsync().Result;
-
-                // If Uber gives us an error, bail and pass it up
-                if (!response.IsSuccessStatusCode)
+                // Do a lookup in Uber
+                UberResponse rsp = Logic.LookUpInUber(username);
+                if(rsp.ResponseStatus != 200)
                 {
-                    Console.WriteLine(formattedUsername + "!!! Uber returned an error.");
-                    return StatusCode(500, RspBody);
+                    return StatusCode(rsp.ResponseStatus, rsp.ResponseBody);
                 }
-
-                //Console.WriteLine(RspBody);
-
-                // Parse out the JSON
-                dynamic json = JToken.Parse(RspBody);
-
-                // This is an RPC error, so return a Server Failure
-                if (null != json.error)
-                {
-                    Console.WriteLine(formattedUsername + "!!! Uber returned an error.");
-                    return StatusCode(500, RspBody);
-                }
-
-                // Probably a badge not found error.
-                if (null != json.result.error)
-                {
-                    Console.WriteLine(formattedUsername + "!!! Uber returned a user not found error.");
-                    return StatusCode(404, RspBody);
-                }
-
-                // Create an attendee
-                user = json.result.ToObject<Attendee>();
 
                 // Insert it into the local DB
-                InsertUserFromLocalAttendeeList(user);
+                InsertUserFromLocalAttendeeList(rsp.user);
             }
 
 
@@ -190,7 +147,7 @@ namespace WifiAuth.Controllers
             }
 
             // Check to see if the Attendee is allowed to access the internet
-            if (user.BadgeType == "Staff" || user.BadgeType == "Guest" || user.BadgeLabels.Contains("Panelist") || user.BadgeLabels.Contains("Volunteer") || user.BadgeLabels.Contains("Shopkeep") || forceAllow)
+            if (Logic.IsUserAllowedWiFiByDefault(user) || forceAllow)
             {
                 if (forceAllow) { Console.WriteLine(formattedUsername + "Force allow override in place for " + username + " !"); }
 
