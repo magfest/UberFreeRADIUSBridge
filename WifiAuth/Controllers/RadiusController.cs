@@ -136,6 +136,9 @@ namespace WifiAuth.Controllers
 
                 // Insert it into the local DB
                 InsertUserFromLocalAttendeeList(rsp.user);
+
+                // And return the returned user
+                user = rsp.user;
             }
 
 
