@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="DB\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
@@ -27,7 +28,6 @@
     <None Remove="wwwroot\Routes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Remove="wwwroot\index.html" />
     <Content Remove="Index.cshtml" />
     <Content Remove="config.json" />
     <Content Remove="wwwroot\.DS_Store" />
